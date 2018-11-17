@@ -16,10 +16,10 @@ class Calculator extends React.Component{
 
 	insert(interaction){
 		if(this.state.number.length >= 9){
+			let array = ['C', '/', 'del.', 'X', '+', '-', 'M', '=']
+			if(!array.includes(interaction))
 			return
 		}
-		console.log(interaction)
-
 		switch (interaction){
 			case '1': 
 			case '2':
@@ -41,6 +41,7 @@ class Calculator extends React.Component{
 						number: tempNumber
 					})
 				}
+				return; 
 			case '0':
 				if(this.state.number != '0' && interaction === '0'){
 					let value = this.state.number + '0'
@@ -48,12 +49,40 @@ class Calculator extends React.Component{
 						number: value
 					})
 				}
+				return;
 			case '.': 
 				if(!this.state.number.includes('.') && this.state.number.length < 8){
 					this.setState({
 						number: this.state.number + '.'
 					})
 				}
+				return;
+			case 'C': 
+				this.setState({
+					number: '0'
+				})
+				return;
+			case 'del.': 
+				if(this.state.number.length <= 1){
+					this.setState({
+						number: '0'
+					})
+				} 
+				else if (this.state.number.substring(this.state.number.length - 2, this.state.number.length - 1) == '.'){
+					let temp = this.state.number.substring(0, this.state.number.length - 2);
+					this.setState({
+						number: temp
+					})
+				}
+
+				else{
+					let temp = this.state.number.substring(0, this.state.number.length - 1);
+					
+					this.setState({
+						number: temp
+					}) 
+				}
+				return; 
 
 		}
 		console.log(this.state.number)
@@ -65,26 +94,26 @@ class Calculator extends React.Component{
 		if(this.state.number == "ERROR"){
 			return; 
 		}
-
+		let result = 0; 
 		if(this.state.operation == '+'){
-			this.state.result = this.state.stack_num + parseInt(this.state.number); 
+			result = this.state.stack_num + parseInt(this.state.number); 
 		}
 		else if(this.state.operation == '-'){
-			this.state.result = this.state.stack_num - parseInt(this.state.number); 
+			result = this.state.stack_num - parseInt(this.state.number); 
 		}
 		else if(this.state.operation == '/'){
-			this.state.result = this.state.stack_num / parseInt(this.state.number); 
+			result = this.state.stack_num / parseInt(this.state.number); 
 		}
 		else if(this.state.operation == '*'){
-			this.state.result = this.state.stack_num * parseInt(this.state.number); 
+			result = this.state.stack_num * parseInt(this.state.number); 
 		}
 		else if(this.state.operation == 'M'){
-			this.state.result = this.state.stack_num % parseInt(this.state.number); 
+			result = this.state.stack_num % parseInt(this.state.number); 
 		}
 
-		if(this.state.result > 999999999 || this.state.result < 0){
-			this.state.number = 'ERROR'; 
+		if(result > 999999999 || result < 0){ 
 			this.setState({
+				number: 'ERROR', 
 				stack_num: 0, 
 				operation: null, 
 				decimal: false, 
@@ -93,15 +122,17 @@ class Calculator extends React.Component{
 
 		}
 		else{
-			let temp = this.state.result.toString(); 
+			let temp = result.toString(); 
 			if(temp.length > 9){
 				this.setState({
-					number: parseInt(temp.substring(0,9)) 
+					number: temp.substring(0,9), 
+					stack_num: parseInt(temp.substring(0,9)) 
 				})
 			}
 			else{
 				this.setState({
-					number: parseInt(temp)
+					number: temp, 
+					stack_num: parseInt(temp) 
 				})
 			}
 		}
@@ -111,8 +142,8 @@ class Calculator extends React.Component{
 
 	}
 
-	handleClick(){
-
+	handleClick(interaction){
+		
 
 	}
 
@@ -123,8 +154,8 @@ class Calculator extends React.Component{
 					<div className = "showcase">
 					{this.state.number}
 					</div>
-					<button className = "button"> C </button>
-					<button className = "erase button"> del. </button>
+					<button className = "button" onClick = {this.insert.bind(this, 'C')}> C </button>
+					<button className = "erase button" onClick = {this.insert.bind(this, 'del.')}> del. </button>
 					<button className = "button"> M </button>
 					<button className = "button"> / </button>
 					<button className = "button" onClick = {this.insert.bind(this, '7')}> 7 </button>
